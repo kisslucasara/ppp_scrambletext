@@ -70,6 +70,28 @@ loader.load(
 
     textMesh2.position.set(-4, 0, 0.1);  // Move "PERMITTED" slightly forward
 
+    //Third text: PROMOTED
+    const geometry3 = new THREE.TextGeometry('PROMOTED', {
+      font: font,
+      size: 1,
+      height: 0.2,
+      curveSegments: 12,
+      bevelEnabled: true,
+      bevelThickness: 0.05,
+      bevelSize: 0.05,
+      bevelSegments: 5,
+    });
+
+    const material3 = new THREE.MeshPhongMaterial({
+      color: 0x857972,
+      shininess: 50, // Adjust shininess
+      specular: 0xaaaaaa, // Adjust specular highlights
+      transparent: true,
+      opacity: 1,
+    });
+    textMesh3 = new THREE.Mesh(geometry3, material3);
+    textMesh3.position.set(-4, 0, 0.1);  // Move "PROMOTED" slightly forward
+    
     // Add meshes and start the loop
     scene.add(textMesh1);
     scene.add(textMesh2);
@@ -124,23 +146,28 @@ function scrambleText(mesh, finalText, callback) {
   
 
   function startLoop() {
+    // Scramble "PERMITTED" first
     scrambleText(textMesh2, 'PERMITTED', () => {
-      setTimeout(() => {
-        console.log('Hiding PERMITTED, showing PROHIBITED');
-        textMesh2.material.opacity = 0;
-        textMesh1.material.opacity = 1;
-  
-        scrambleText(textMesh1, 'PROHIBITED', () => {
-          setTimeout(() => {
-            console.log('Hiding PROHIBITED, showing PERMITTED');
-            textMesh1.material.opacity = 0;
-            textMesh2.material.opacity = 1;
-  
-            // Restart the loop
-            startLoop();
-          }, 1000); // Wait after PROHIBITED scrambling
+      console.log('Hiding PERMITTED, showing PROHIBITED');
+      textMesh2.material.opacity = 0;
+      textMesh1.material.opacity = 1;
+
+      // Scramble "PROHIBITED"
+      scrambleText(textMesh1, 'PROHIBITED', () => {
+        console.log('Hiding PROHIBITED, showing PROMOTED');
+        textMesh1.material.opacity = 0;
+        textMesh3.material.opacity = 1;
+
+        // Scramble "PROMOTED"
+        scrambleText(textMesh3, 'PROMOTED', () => {
+          console.log('Hiding PROMOTED, showing PERMITTED');
+          textMesh3.material.opacity = 0;
+          textMesh2.material.opacity = 1;
+
+          // Restart the loop
+          startLoop();
         });
-      }, 1000); // Wait after PERMITTED scrambling
+      });
     });
   }
   
